@@ -18,7 +18,7 @@
             <div id="eingabe-form">
                 <nav class="navbar navbar-expand-lg bg-body-tertiary">
                     <div class="container-fluid">
-                        <a class="navbar-brand" href="#">Finanzapp</a>
+                        <a class="navbar-brand" href="#"></a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
@@ -83,6 +83,41 @@
                 <div id="result" class="mt-3"></div>
             </div>
         </section>
+
+        <div class="container mt-4">
+            <h3>Ausgaben für {{ monat_name }} </h3>
+
+            <div class="mb-1">
+                <p>Ausgaben Aktuelle</p>
+                <strong>Gesamtsumme:</strong> {{ gesamt_summe }}€
+            </div>
+
+
+        </div>
+
+        <div class="container mt-4">
+            <h2>Aktuelle Ausgaben</h2>
+            
+            {% if ausgaben %}
+                <div class="list-group">
+                    {% for ausgabe in ausgaben %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">{{ ausgabe.ausgaben_kategorie }}</h5>
+                                <small class="text-muted">{{ ausgabe.zeitpunkt_ausgabe|date:"d.m.Y H:i" }} Uhr</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ ausgabe.ausgaben_höhe }}€</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Noch keine Ausgaben vorhanden. Füge deine erste Ausgabe hinzu!
+                </div>
+            {% endif %}
+        </div>
+
+       
     </section>
 
     <!-- JavaScript für Live-Update des Sliders -->
