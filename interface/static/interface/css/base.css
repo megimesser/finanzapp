@@ -1,0 +1,24 @@
+#inner_wrapper {
+    width: 80vw;
+    
+
+}
+
+#outer_wrapper{
+    width: 100vw;
+    height: 100vh;
+    padding-top: 30px;
+   
+    justify-content: center;
+    display: flex;
+   
+
+    
+}
+
+
+body{
+ height: 100vh;
+}
+
+ 

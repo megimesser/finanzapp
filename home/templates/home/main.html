@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'home/style.css' %}">
+    
+    <!-- HTMX von CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+    <h1>Willkommen</h1>
+    <form hx-post="/add-cost" 
+          hx-target="#result"
+          hx-swap="afterbegin">
+
+          <select name ="kategorie" required>
+            <option value="">Kategorie wählen...</option>
+            <option value="income">Einnahmen</option>
+            <option value="expense">Ausgaben</option>
+  
+
+
+
+
+          </select>
+          
+
+
+          <input type="kostenstelle"
+
+
+
+
+
+    </form>
+   
+
+    
+    <!-- HTMX funktioniert jetzt! -->
+    <button hx-get="/data/" hx-target="#result">
+        Daten laden
+    </button>
+    <div id="result"></div>
+</body>
+</html>
