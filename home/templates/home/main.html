@@ -10,105 +10,89 @@
     
     <!-- HTMX von CDN -->
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-
 <body>
-    
     <section id="main-section-home">
-
-    <section>
-    <div>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="#">Navbar</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Features</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Pricing</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                  </li>
-                </ul>
-              </div>
+        <section>
+            <div id="eingabe-form">
+                <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">Finanzapp</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Ausgaben</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Statistik</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
             </div>
-          </nav>
-    </div>
 
-    
-    
-    <form hx-post="/add-cost" 
-          hx-target="#result"
-          hx-swap="afterbegin">
-          <!-- HTML -->
+            <div id="main-wrapper">
+                <!-- KORRIGIERTES FORMULAR -->
+                <form hx-post="{% url 'home:add_cost' %}" 
+                      hx-target="#result"
+                      hx-swap="afterbegin">
+                    
+                    {% csrf_token %}
 
+                    <!-- Kategorie -->
+                    <div class="mb-3">
+                        <label for="ausgaben_kategorie" class="form-label">Kategorie:</label>
+                        <select id="ausgaben_kategorie" 
+                                name="ausgaben_kategorie" 
+                                class="form-select" 
+                                required>
+                            <option value="">Kategorie wählen...</option>
+                            <option value="einkauf">Einkauf</option>
+                            <option value="kleidung">Kleidung</option>
+                            <option value="restaurant">Restaurant</option>
+                        </select>
+                    </div>
 
-    <div>
-            <label for="amount">Betrag: <span id="amount-value">0</span>€</label>
-            <input 
-            type="range" 
-            id="amount" 
-            name="amount"
-            min="0" 
-            max="1000" 
-            value="0"
-            hx-post="/update-amount"
-            hx-trigger="input"
-            hx-target="#result"
-            hx-vals='js:{amount: document.getElementById("amount").value}'>
-            <div id="result"></div>
-    </div>
+                    <!-- Betrag Slider - KORRIGIERT! -->
+                    <div class="mb-3">
+                        <label for="ausgaben_höhe" class="form-label">
+                            Betrag: <span id="amount-value">0</span>€
+                        </label>
+                        <input 
+                            type="range" 
+                            id="ausgaben_höhe" 
+                            name="ausgaben_höhe"
+                            class="form-range"
+                            min="0" 
+                            max="250" 
+                            value="0">
+                    </div>
 
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                </form>
 
-  
+                <!-- Ergebnisse werden hier angezeigt -->
+                <div id="result" class="mt-3"></div>
+            </div>
+        </section>
+    </section>
+
+    <!-- JavaScript für Live-Update des Sliders -->
     <script>
-            // Wert live anzeigen
-            document.getElementById('amount').addEventListener('input', function(e) {
+        document.getElementById('ausgaben_höhe').addEventListener('input', function(e) {
             document.getElementById('amount-value').textContent = e.target.value;
-            });
+        });
     </script>
 
-
-          <select name ="kategorie" required>
-            <option value="">Kategorie wählen...</option>
-            <option value="income">Einnahmen</option>
-            <option value="expense">Ausgaben</option>
-  
-
-
-
-
-          </select>
-          
-
-
-          <input type="kostenstelle"
-
-
-
-
-
-    </form>
-   
-
-    
-    <!-- HTMX funktioniert jetzt! -->
-    <button hx-get="/data/" hx-target="#result">
-        Daten laden
-    </button>
-    <div id="result"></div>
-</section>
-</section>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
