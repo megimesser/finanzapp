@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "interface",
-    "home"
+    "home",
+    "kosten",
 ]
 
 STATIC_URL = '/static/'

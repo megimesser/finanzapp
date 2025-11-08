@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="{% static 'home/style.css' %}">
+    <link rel="stylesheet" href="{% static 'kosten/style.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- HTMX von CDN -->
@@ -41,43 +41,71 @@
 
             <div id="main-wrapper">
                 <!-- KORRIGIERTES FORMULAR -->
-                <form hx-post="{% url 'home:add_cost' %}" 
+                <form hx-post="{% url 'kosten:kosten_add' %}" 
                       hx-target="#result"
                       hx-swap="afterbegin">
                     
                     {% csrf_token %}
 
-                    <!-- Kategorie -->
-                    <div class="mb-3">
-                        <label for="ausgaben_kategorie" class="form-label">Kategorie:</label>
-                        <select id="ausgaben_kategorie" 
-                                name="ausgaben_kategorie" 
-                                class="form-select" 
+                                        
+                                            <!-- Kategorie Dropdown -->
+                        <div class="mb-3">
+                            <label for="kosten_kategorie" class="form-label">Kategorie</label>
+                            <select 
+                                id="kosten_kategorie" 
+                                name="kosten_kategorie" 
+                                class="form-select"
                                 required>
-                            <option value="">Kategorie wählen...</option>
-                            <option value="einkauf">Einkauf</option>
-                            <option value="kleidung">Kleidung</option>
-                            <option value="restaurant">Restaurant</option>
-                        </select>
-                    </div>
+                                <option value="" selected disabled>Bitte wählen...</option>
+                                <option value="Abo">Abo</option>
+                                <option value="Service">Service</option>
+                                <option value="Lebensmittel">Lebensmittel</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Wohnung">Wohnung</option>
+                                <option value="Unterhaltung">Unterhaltung</option>
+                                <option value="Sonstiges">Sonstiges</option>
+                            </select>
+                        </div>
 
-                    <!-- Betrag Slider - KORRIGIERT! -->
-                    <div class="mb-3">
-                        <label for="ausgaben_höhe" class="form-label">
-                            Betrag: <span id="amount-value">0</span>€
-                        </label>
-                        <input 
-                            type="range" 
-                            id="ausgaben_höhe" 
-                            name="ausgaben_höhe"
-                            class="form-range"
-                            min="0" 
-                            max="250" 
-                            value="0">
-                    </div>
+                        <!-- Name Eingabe -->
+                        <div class="mb-3">
+                            <label for="kosten_name" class="form-label">Bezeichnung</label>
+                            <input 
+                                type="text" 
+                                id="kosten_name" 
+                                name="kosten_name"
+                                class="form-control"
+                                placeholder="z.B. Netflix, Miete, Einkauf..."
+                                required>
+                        </div>
 
-                    <button type="submit" class="btn btn-primary">Speichern</button>
+                        <!-- Betrag Eingabe -->
+                        <div class="mb-3">
+                            <label for="kosten_höhe" class="form-label">Betrag (€)</label>
+                            <input 
+                                type="number" 
+                                id="kosten_höhe" 
+                                name="kosten_höhe"
+                                class="form-control"
+                                min="0" 
+                                step="0.01"
+                                placeholder="0.00"
+                                required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Speichern</button>
                 </form>
+
+                        <!-- Gesamtkosten aktualisieren Button -->
+            <form method="post" action="{% url 'kosten:gesamtkosten_view' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-calculator"></i> Gesamtkosten berechnen
+                </button>
+            </form>
+
+
+
 
                 <!-- Ergebnisse werden hier angezeigt -->
                 <div id="result" class="mt-3"></div>

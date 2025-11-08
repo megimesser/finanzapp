@@ -51,7 +51,7 @@ def main_view(request):
     for ausgabe in ausgaben_monatlich: 
         print(f"Kategorie: {ausgabe.ausgaben_kategorie} - Höhe: {ausgabe.ausgaben_höhe}€")
         gesamt_summe += ausgabe.ausgaben_höhe
-    
+
     print(f"Gesamtsumme für {monat}/{jahr}: {gesamt_summe}€")
     
     # Chart-Daten vorbereiten (nur für aktuellen Monat)

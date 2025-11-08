@@ -27,4 +27,5 @@ urlpatterns = [
     path('home/', include('home.urls')),  # Komma hinzugefügt
     path('admin/', admin.site.urls),
     path("interface/", include("interface.urls")),
+    path("kosten/", include("kosten.urls")),  # ✅ RICHTIG
 ]
