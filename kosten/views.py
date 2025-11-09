@@ -1,7 +1,7 @@
 from django.shortcuts import render , redirect
 from django.http import HttpResponse
 from datetime import datetime
-from .models import Kosten, Kosten_Summe
+from .models import Kosten, Kosten_Summe, Einnahmen, Einnahmen_Summe
 from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 from django.db.models import Sum
@@ -9,14 +9,66 @@ from django.db.models import Sum
 
 
 def kosten_view(request):
-    context = {}  # ✅ Leeres Dictionary
-    # ODER
-    context = {
-        'titel': 'Kostenübersicht',
-        'daten': 'irgendwas'
+    kosten_summe = Kosten_Summe.objects.first()
+
+    # Debug-Ausgabe in der Konsole
+    print("DEBUG: kosten_summe =", kosten_summe)
+    if kosten_summe:
+        print("DEBUG: kosten_gesamt =", kosten_summe.kosten_gesamt)
+
+    # Kontext für das Template
+    summen_context = {
+        "Summe_kosten": kosten_summe.kosten_gesamt if kosten_summe else "Keine Daten"
     }
+
+    return render(request, 'kosten/kosten.html', summen_context)
+
+
+
+#Einnahmen Hinzufügen
+def einnahmen_add(request):
+    if request.method != 'POST':
+        return HttpResponse("Nur POST erlaubt", status=405)
     
-    return render(request, 'kosten/kosten.html', context)
+    einnahmen_kategorie = request.POST.get('einnahmen_kategorie')
+    einnahmen_name = request.POST.get("einnahmen_name")
+    einnahmen_höhe = request.POST.get('einnahmen_höhe')
+
+    # Validierung
+    if not all([einnahmen_kategorie, einnahmen_name, einnahmen_höhe]):
+        return HttpResponse("""
+            <div class="error-message" style="color: red; padding: 10px; margin: 10px 0; background: #f8d7da; border-radius: 5px;">
+                ⚠️ Bitte fülle alle Felder aus!
+            </div>
+        """)
+
+    try:
+        einnahmen_höhe = Decimal(einnahmen_höhe)
+    except (InvalidOperation, TypeError):
+        return HttpResponse("""
+            <div class="error-message" style="color: red; padding: 10px; margin: 10px 0; background: #f8d7da; border-radius: 5px;">
+                ⚠️ Bitte gib eine gültige Zahl für die Kostenhöhe ein!
+            </div>
+        """)
+
+    try:
+        einnahmen = Einnahmen.objects.create(
+            einnahmen_kategorie=einnahmen_kategorie,
+            einnahmen_name=einnahmen_name,
+            einnahmen_höhe=einnahmen_höhe,
+        )
+        return HttpResponse(f"""
+            <div class="success-message" style="color: green; padding: 10px; margin: 10px 0; background: #d4edda; border-radius: 5px;">
+                ✅ {einnahmen.einnahmen_name} in Höhe von {einnahmen.einnahmen_höhe}€ gespeichert!
+            </div>
+        """)
+    except Exception as e:
+        return HttpResponse(f"""
+            <div class="error-message" style="color: red; padding: 10px; margin: 10px 0; background: #f8d7da; border-radius: 5px;">
+                ❌ Fehler beim Speichern: {str(e)}
+            </div>
+        """)
+
 
 
 
@@ -91,6 +143,35 @@ def gesamtkosten_view(request):
     }
     
     return render(request, 'kosten/kosten.html', context)
+
+
+
+def einnahmen_view(request):
+    
+    # Summe berechnen
+    einnahmen_gesamt = Einnahmen.objects.aggregate(
+        total=Sum('einnahmen_höhe')
+    )['total'] or 0
+    
+    # Aktualisieren
+    Einnahmen_Summe.objects.update_or_create(
+        id=1,
+        defaults={'einnahmen_gesamt': einnahmen_gesamt}
+    )
+    
+    # Alle Kosten laden
+    alle_einnahmen = Einnahmen.objects.all()
+    summe = Einnahmen_Summe.objects.first()
+    
+    context = {
+        'alle_einnahmen': alle_einnahmen,
+        'einnahmen_gesamt': summe.einnahmen_gesamt if summe else 0
+    }
+    
+    return render(request, 'kosten/kosten.html', context)
+
+
+
 """    
     # Chart-Daten vorbereiten (nur für aktuellen Monat)
     kategorien_daten = ausgaben_monatlich.values('ausgaben_kategorie').annotate(
