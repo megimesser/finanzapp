@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Ausgabe
+from .models import Ausgabe, Kapital
 from datetime import datetime
 from django.db.models import Sum
 import json
@@ -33,6 +33,55 @@ def add_cost(request):
             """)
     
     return HttpResponse("Nur POST erlaubt")
+
+
+# Berechnung für Variablen Restbetrag
+# In den Mainview implementieren 
+# Restbetrag wird innerhalb der Kosten.App berechnet 
+"""
+
+heute = datetime.now()
+monat = heute.month
+jahr = heute.year
+    
+
+ausgaben_gesamt = Ausgabe.objects.all()
+ausgaben_wert_gesamt = ausgaben_gesamt.ausgaben if ausgaben_gesamt else Decumal('0')
+
+   
+ausgaben_monatlich_furberechnung = Ausgabe.objects.filter(
+        zeitpunkt_ausgabe__month=monat,
+    )
+
+for ausgabe in 
+
+
+
+
+for ausgaben_einzeln in ausgaben_gesamt:
+    if 
+
+
+
+restbetrag_objekt = Restwert.objects.first()
+restbetrag_wert = restbetrag_objekt.restwert if restbetrag_objekt else Decimal('0')
+
+
+
+
+restbetrag_variabel = resbetrag_variabel.objects.update_or_create(
+        zeitpunkt_ausgabe__month=monat,
+        zeitpunkt_ausgabe__year=jahr
+    )
+
+
+
+
+"""
+
+
+
+
 
 #Anzeige von Ausgaben
 def main_view(request):
@@ -72,8 +121,19 @@ def main_view(request):
     # Restbetrag hinzufügen
     restbetrag_objekt = Restwert.objects.first()
     restbetrag_wert = restbetrag_objekt.restwert if restbetrag_objekt else Decimal('0')
+
+    #Das noch frei zur Verfügung stehende Kapital 
+    kapital = restbetrag_wert - gesamt_summe
+
+    Kapital.objects.create(
+        kapital = kapital,
+        datum = heute,
+
+    )
+
     
     context = {
+        'kapital': kapital,
         'ausgaben': ausgaben_monatlich,
         'gesamt_summe': gesamt_summe,
         'monat': monat,
@@ -131,15 +191,3 @@ def dateien_nach_monat(request):
 
 
 
-
-def restbetrag_ansicht(request):
-    restbetrag_objekt = Restwert.objects.first()
-    
-    # Auf das Feld zugreifen
-    restbetrag_wert = restbetrag_objekt.restwert if restbetrag_objekt else Decimal('0')
-
-    restwert_context = {
-        'restbetrag': restbetrag_wert
-    }
-
-    return render(request, "home/main.html", restwert_context)

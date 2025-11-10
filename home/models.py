@@ -13,3 +13,9 @@ class Ausgabe(models.Model):
     class Meta:
         verbose_name = "Ausgabe"
         verbose_name_plural = "Ausgaben"  # Plural nur für Admin-Anzeige
+
+
+
+class Kapital(models.Model):
+    kapital = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    datum = models.DateTimeField(auto_now_add=True)
