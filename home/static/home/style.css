@@ -10,7 +10,7 @@ body {
  
   /* ======== Formularbereich ======== */
   #eingabe_wrapper {
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: flex-start;
     width: 100%;
@@ -21,7 +21,7 @@ body {
     border-radius: 20px;
     padding: 2rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    width: 90%;
+    width: 100%;
     max-width: 600px;
   }
   
@@ -92,31 +92,31 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   }
   
-
   input[type="range"] {
     width: 100%;
     height: 14px;
     border-radius: 8px;
     outline: none;
     appearance: none;
-    background: linear-gradient(90deg, green 0%, green 0%, #ddd 0%);
+    background: linear-gradient(90deg, hsl(120, 100%, 40%) 0%, #ddd 0%);
+    transition: background 0.2s linear;
   }
   
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: #fff;
     border: 3px solid #00d4ff;
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-    transition: 0.2s;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+    transition: transform 0.15s ease;
   }
   
   input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
   }
   
 
@@ -172,5 +172,21 @@ body {
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+  
+
+/* Allgemeine Textfarbe anpassen */
+p, label, span, strong, small, li {
+    color: #eaf6ff !important;
+  }
+  
+  /* Überschriften leicht abheben */
+  h1, h2, h3 {
+    color: #bff0ff !important; /* sanft leuchtendes Hellblau */
+  }
+  
+  /* Muted-Text in hellgrau statt grau */
+  .text-muted {
+    color: #b8cfff !important;
   }
   

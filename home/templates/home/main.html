@@ -146,21 +146,14 @@
       const value = parseInt(e.target.value);
       const max = parseInt(e.target.max);
       const percent = (value / max) * 100;
-      
-      // Betrag anzeigen
       output.textContent = value;
     
-      // Farbe anhand des Werts wählen
-      let color;
-      if (value < 80) {
-        color = "green";
-      } else if (value < 160) {
-        color = "yellow";
-      } else {
-        color = "red";
-      }
+      // HSL-Farbwert: Grün (120°) -> Gelb (60°) -> Rot (0°)
+      // hue = 120 - (value / max) * 120  (also von 120° bis 0°)
+      const hue = 120 - (value / max) * 120; 
+      const color = `hsl(${hue}, 100%, 45%)`;
     
-      // Dynamischer Verlauf (gefüllter Bereich farbig)
+      // Verlauf bis zum aktuellen Punkt
       slider.style.background = `linear-gradient(90deg, ${color} ${percent}%, #ddd ${percent}%)`;
     });
     </script>
