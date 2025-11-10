@@ -14,7 +14,7 @@
 
 <body>
     <section id="main-section-home">
-        <section>
+        <section id="eingabe_wrapper">
             <div id="eingabe-form">
                 <nav class="navbar navbar-expand-lg bg-body-tertiary">
                     <div class="container-fluid">
@@ -90,6 +90,17 @@
             <div class="mb-1">
                 <p>Ausgaben Aktuelle</p>
                 <strong>Gesamtsumme:</strong> {{ gesamt_summe }}€
+            </div>
+
+
+        </div>
+
+        <div class="container mt-4">
+            <h3>Restbetrag für {{ monat_name }} </h3>
+
+            <div class="mb-1">
+                <p>Ausgaben Aktuelle</p>
+                <p>Aktueller Restbetrag: {{ restbetrag }}€</p>
             </div>
 
 

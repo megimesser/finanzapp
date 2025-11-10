@@ -40,7 +40,7 @@
             </div>
 
             <div id="main-wrapper">
-
+                <div id="top_wrapper_ubersicht">
                 <div class="container mt-4">
                     <h3>Ausgaben gesamt</h3>
         
@@ -49,9 +49,41 @@
                         <strong>Gesamtsumme:</strong> {{ Summe_kosten }} €
 
                     </div>
+
+
         
         
                 </div>
+
+                <div class="container mt-4">
+                    <h3>Einnahmen gesamt</h3>
+        
+                    <div class="mb-1">
+                        <p>Einnahmen Aktuelle</p>
+                        <strong>Gesamtsumme:</strong> {{ Summe_einnahmen }} €
+
+                    </div>
+
+                    
+        
+        
+                </div>
+
+                <div class="container mt-4">
+                    <h3>Restbetrag gesamt</h3>
+        
+                    <div class="mb-1">
+                        <p>Restbetrag monatlich</p>
+                        <strong>Gesamtsumme:</strong> {{ Restbetrag }} €
+
+                    </div>
+
+                    
+        
+        
+                </div>
+
+            </div>
         
 
 
@@ -194,7 +226,8 @@
                         </button>
                     </form>
 
-
+        <!-- DIESER CONTAINER FEHLT! -->
+<div id="result"></div>
 
 
 

@@ -4,7 +4,11 @@ from .models import Ausgabe
 from datetime import datetime
 from django.db.models import Sum
 import json
+from kosten.models import Einnahmen_Summe, Kosten_Summe, Restwert
+from decimal import Decimal
 
+
+#Ausgaben hinzufügen
 def add_cost(request):
     if request.method == 'POST':
         ausgaben_kategorie = request.POST.get('ausgaben_kategorie')
@@ -30,6 +34,7 @@ def add_cost(request):
     
     return HttpResponse("Nur POST erlaubt")
 
+#Anzeige von Ausgaben
 def main_view(request):
     # Aktueller Monat und Jahr
     heute = datetime.now()
@@ -64,7 +69,10 @@ def main_view(request):
     
     chart_labels_json = json.dumps(chart_labels)
     chart_data_json = json.dumps(chart_data)
-
+    # Restbetrag hinzufügen
+    restbetrag_objekt = Restwert.objects.first()
+    restbetrag_wert = restbetrag_objekt.restwert if restbetrag_objekt else Decimal('0')
+    
     context = {
         'ausgaben': ausgaben_monatlich,
         'gesamt_summe': gesamt_summe,
@@ -73,8 +81,8 @@ def main_view(request):
         'jahr': jahr,
         'chart_labels': chart_labels_json,
         'chart_data': chart_data_json,
+        'restbetrag': restbetrag_wert,  # ← NEU!
     }
-    
     return render(request, 'home/main.html', context)
 
 def show_cost(request):
@@ -104,6 +112,9 @@ def show_cost(request):
     
     return render(request, 'home/ausgaben.html', cost_context)
 
+
+
+
 def dateien_nach_monat(request):
     monat_nummer = int(request.GET.get('monat', datetime.now().month))
     
@@ -117,3 +128,18 @@ def dateien_nach_monat(request):
         'monat_name': monat_name,
     }
     return render(request, 'home/main.html', context)
+
+
+
+
+def restbetrag_ansicht(request):
+    restbetrag_objekt = Restwert.objects.first()
+    
+    # Auf das Feld zugreifen
+    restbetrag_wert = restbetrag_objekt.restwert if restbetrag_objekt else Decimal('0')
+
+    restwert_context = {
+        'restbetrag': restbetrag_wert
+    }
+
+    return render(request, "home/main.html", restwert_context)

@@ -22,3 +22,7 @@ class Kosten_Summe(models.Model):
 
 class Einnahmen_Summe(models.Model):
     einnahmen_gesamt = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+
+class Restwert(models.Model):
+    restwert  = models.DecimalField(max_digits=10, decimal_places=2, default=0)
