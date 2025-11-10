@@ -15,6 +15,14 @@ body {
     align-items: flex-start;
     width: 100%;
   }
+
+  #outer-wrapper{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
   
   #main-wrapper {
     background: rgba(255, 255, 255, 0.08);
