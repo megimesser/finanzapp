@@ -4,20 +4,43 @@ from .models import Ausgabe, Kapital
 from datetime import datetime
 from django.db.models import Sum
 import json
-from kosten.models import Einnahmen_Summe, Kosten_Summe, Restwert
+from kosten.models import Einnahmen_Summe, Kosten_Summe, Restwert, Einnahmen, Kosten
 from decimal import Decimal
 
 
+
+
+
+#Ausgaben hinzufügen
 #Ausgaben hinzufügen
 def add_cost(request):
     if request.method == 'POST':
         ausgaben_kategorie = request.POST.get('ausgaben_kategorie')
         ausgaben_höhe = request.POST.get('ausgaben_höhe')
+        ausgaben_eigen = request.POST.get('ausgaben_eigen')
+        ausgaben_kommentar = request.POST.get('ausgaben_kommentar')
+        
+        # Wenn ausgaben_höhe leer ist, nutze ausgaben_eigen
+        if not ausgaben_höhe or ausgaben_höhe.strip() == '':
+            ausgaben_höhe = ausgaben_eigen
+        
+        # Wenn ausgaben_kommentar leer ist, setze Default
+        if not ausgaben_kommentar or ausgaben_kommentar.strip() == '':
+            ausgaben_kommentar = "kein Kommentar"
+        
+        # Validierung: Mindestens eine Ausgabenhöhe muss vorhanden sein
+        if not ausgaben_höhe or ausgaben_höhe.strip() == '':
+            return HttpResponse(f"""
+                <div class="error-message" style="color: red; padding: 10px; margin: 10px 0; background: #f8d7da; border-radius: 5px;">
+                    ❌ Bitte gib eine Ausgabenhöhe an!
+                </div>
+            """)
         
         try:
             ausgabe = Ausgabe.objects.create(
                 ausgaben_höhe=ausgaben_höhe,
                 ausgaben_kategorie=ausgaben_kategorie,
+                ausgaben_kommentar=ausgaben_kommentar,  # Hinzugefügt
             )
             
             return HttpResponse(f"""
@@ -33,7 +56,6 @@ def add_cost(request):
             """)
     
     return HttpResponse("Nur POST erlaubt")
-
 
 # Berechnung für Variablen Restbetrag
 # In den Mainview implementieren 
@@ -78,9 +100,28 @@ restbetrag_variabel = resbetrag_variabel.objects.update_or_create(
 
 
 """
-
-
-
+def kosten_view(request):
+    import json
+    from django.db.models import Sum
+    
+    # Bestehender Code...
+    kosten_summe = Kosten_Summe.objects.first()
+    
+    # NEU: Chart-Daten
+    kategorien_daten = Kosten.objects.values('kosten_kategorie').annotate(
+        summe=Sum('kosten_höhe')
+    ).order_by('-summe')
+    
+    chart_labels = [item['kosten_kategorie'] for item in kategorien_daten]
+    chart_data = [float(item['summe']) for item in kategorien_daten]
+    
+    context = {
+        "Summe_kosten": kosten_summe.kosten_gesamt if kosten_summe else 0,
+        "chart_labels": json.dumps(chart_labels),  # NEU
+        "chart_data": json.dumps(chart_data),      # NEU
+    }
+    
+    return render(request, 'kosten/kosten.html', context)
 
 
 #Anzeige von Ausgaben
@@ -191,3 +232,69 @@ def dateien_nach_monat(request):
 
 
 
+def index(request):
+    heute = datetime.now()
+    monat_name = heute.strftime("%B %Y")
+    
+    # Ausgaben des aktuellen Monats
+    ausgaben = Ausgabe.objects.filter(
+        zeitpunkt_ausgabe__month=heute.month,
+        zeitpunkt_ausgabe__year=heute.year
+    ).order_by('-zeitpunkt_ausgabe')
+    
+    # Gesamtsumme der Ausgaben
+    gesamt_summe = ausgaben.aggregate(
+        total=Sum('ausgaben_höhe')
+    )['total'] or 0
+    
+    # Startkapital aus Restwert holen
+    restbetrag_objekt = Restwert.objects.first()
+    startkapital = restbetrag_objekt.restwert if restbetrag_objekt else Decimal('2000')
+    
+    # Konvertiere zu float für Berechnungen
+    startkapital = float(startkapital)
+    gesamt_summe = float(gesamt_summe)
+    
+    # Verfügbares Kapital
+    kapital = startkapital - gesamt_summe
+    
+    # Prozentsätze berechnen
+    if startkapital > 0:
+        prozent_verbraucht = round((gesamt_summe / startkapital) * 100, 1)
+        prozent_verfuegbar = round(100 - prozent_verbraucht, 1)
+    else:
+        prozent_verbraucht = 0
+        prozent_verfuegbar = 100
+    
+    # Farbe für den Balken basierend auf Verbrauch
+    if prozent_verbraucht < 50:
+        bar_color = "#28a745"  # Grün
+    elif prozent_verbraucht < 75:
+        bar_color = "#ffc107"  # Gelb
+    elif prozent_verbraucht < 90:
+        bar_color = "#fd7e14"  # Orange
+    else:
+        bar_color = "#dc3545"  # Rot
+    
+    # Chart-Daten für Kategorien
+    kategorien_summen = ausgaben.values('ausgaben_kategorie').annotate(
+        summe=Sum('ausgaben_höhe')
+    ).order_by('-summe')
+    
+    chart_labels = json.dumps([k['ausgaben_kategorie'] for k in kategorien_summen])
+    chart_data = json.dumps([float(k['summe']) for k in kategorien_summen])
+    
+    context = {
+        'ausgaben': ausgaben,
+        'gesamt_summe': gesamt_summe,
+        'monat_name': monat_name,
+        'kapital': kapital,
+        'startkapital': startkapital,
+        'prozent_verbraucht': prozent_verbraucht,
+        'prozent_verfuegbar': prozent_verfuegbar,
+        'bar_color': bar_color,
+        'chart_labels': chart_labels,
+        'chart_data': chart_data,
+    }
+    
+    return render(request, 'home/index.html', context)

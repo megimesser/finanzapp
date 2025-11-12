@@ -5,7 +5,64 @@ from .models import Kosten, Kosten_Summe, Einnahmen, Einnahmen_Summe, Restwert
 from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 from django.db.models import Sum
+from django.views import View
 
+
+#CBV für Löschen und Erstellen und Ändenr von neuen Kosten 
+class UbersichtView(View):
+    
+    def get(self, request):
+        # Alle Kosten (Liste)
+        kosten = Kosten.objects.all()
+        
+        # Ein einzelnes Objekt (das letzte)
+        kosten_einzeln = Kosten.objects.last()
+        
+        # ✅ RICHTIG: Felder vom EINZELNEN Objekt
+        if kosten_einzeln:  # ✅ KORRIGIERT: kosten_einzeln statt kosten prüfen!
+            kosten_höhe = kosten_einzeln.kosten_höhe
+            kosten_kategorie = kosten_einzeln.kosten_kategorie
+            kosten_name = kosten_einzeln.kosten_name
+        else:
+            kosten_höhe = 0
+            kosten_kategorie = ""
+            kosten_name = ""
+        
+        return render(request, 'ubersicht/ubersicht.html', {
+            'kosten': kosten,                        # Alle Kosten (Liste)
+            'kosten_höhe': kosten_höhe,              # Höhe vom letzten
+            'kosten_kategorie': kosten_kategorie,    # Kategorie vom letzten
+            'kosten_name': kosten_name,              # Name vom letzten
+        })
+
+    def post(self, request):
+        # Zeile 1: Holt den Wert des 'action' Feldes aus dem POST-Request
+        # Das ist ein verstecktes Feld im HTML-Formular: <input name="action" value="eintrag_loschen">
+        action = request.POST.get('action')
+
+        # Zeile 2: Prüft, ob die action "eintrag_loschen" ist
+        # Wenn ja, wird der Code im if-Block ausgeführt
+        if action == "eintrag_loschen":
+            
+            # Zeile 3: Holt die Primary Key (ID) des zu löschenden Eintrags
+            # Das kommt aus einem versteckten Feld: <input name="pk" value="5">
+            pk = request.POST.get('pk')
+            
+            # Zeile 4: Sucht das Kosten-Objekt mit dieser ID und löscht es
+            # filter(pk=pk) findet alle Objekte mit dieser ID (normalerweise nur eins)
+            # .delete() löscht sie aus der Datenbank
+            Kosten.objects.filter(pk=pk).delete()
+            
+            # Zeile 5: Leitet den User zurück zur Übersicht
+            # PROBLEM: 'kosten:uberblick' existiert nicht in deinen URLs!
+            # ✅ KORRIGIERT zu 'kosten:ubersicht'
+            return redirect('kosten:ubersicht')
+        
+        # Zeile 6: Falls keine Action matched, zeige die GET-Seite nochmal
+        # Besser: Rufe einfach self.get() auf
+        return self.get(request)
+
+    
 
 def kosten_view(request):
 

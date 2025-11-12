@@ -1,0 +1,70 @@
+/* static/main_css/main.css */
+
+/* Montserrat als Hauptschrift für alles */
+* {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ODER nur für body (empfohlen) */
+body {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+}
+
+/* Verschiedene Gewichte */
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; /* Bold */
+}
+
+p {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400; /* Regular */
+}
+
+.light-text {
+    font-weight: 300; /* Light */
+}
+
+.bold-text {
+    font-weight: 600; /* Semi-Bold */
+}
+
+
+
+
+
+
+.button_primary {
+    background-color: "#ffu24e";
+    border-radius: 50px;
+     
+}
+
+
+.button_measure {
+    padding: 0.2rem 0.6rem; 
+    min-width: 10rem;
+    border-style: none;
+    
+}
+
+.button_measure:hover {
+    /* Deine Hover-Styles hier */
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+
+.main-wrapper{
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.submain-wrapper{
+    width: 80%;
+
+}

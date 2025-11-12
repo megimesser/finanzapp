@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'ubersicht/style.css' %}">
+    <link rel="stylesheet" href="{% static 'main_css/main.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+     <!-- Google Fonts - Montserrat -->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+     
+
+
+
+
+    <!-- HTMX von CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+
+
+<body>
+    <section class="main-wrapper">
+        <section class ="submain-wrapper">
+            <h2>hello</h2>
+            <p>{{ kosten }}</p>{{ kosten }}
+            {{ kosten_wert }}
+
+            <section id="inner_wrapper_table">
+                {% if kosten %}
+                    <div class="list-group">
+                        {% for kost in kosten %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">{{ kost.kosten_höhe }} €</h5>
+                                <small class="text-muted">{{ kost.kosten_name }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ kost.kosten_kategorie }}</span>
+                            
+                            <!-- Eigenes Form für jeden Eintrag -->
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="eintrag_loschen">
+                                <input type="hidden" name="pk" value="{{ kost.pk }}">
+                                <button type="submit" class="button_primary button_measure">
+                                    <i class="bi bi-trash"></i> Löschen
+                                </button>
+                            </form>
+                            
+                            <button class="button_secondary">
+                                <i class="bi bi-pencil"></i> Ändern
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        Noch keine Ausgaben vorhanden. Füge deine erste Ausgabe hinzu!
+                    </div>
+                {% endif %}
+            </section>
+
+         </section>
+    </section>
+</body>
+</html>

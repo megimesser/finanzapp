@@ -6,6 +6,8 @@ class Ausgabe(models.Model):
     ausgaben_höhe = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ausgaben_kategorie = models.CharField(max_length=100)
     zeitpunkt_ausgabe = models.DateTimeField(auto_now_add=True)  # Automatisch setzen!
+    ausgaben_eigen = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    ausgaben_kommentar = models.CharField(max_length=100)
     
     def __str__(self):
         return f"{self.ausgaben_kategorie} - {self.ausgaben_höhe}€"

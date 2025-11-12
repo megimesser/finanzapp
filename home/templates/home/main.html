@@ -63,6 +63,9 @@
                                 <option value="einkauf">Einkauf</option>
                                 <option value="kleidung">Kleidung</option>
                                 <option value="restaurant">Restaurant</option>
+                                <option value="sonstiges">Sonstiges</option>
+                                <option value="freizeit">Freizeit</option>
+                                
                             </select>
                         </div>
 
@@ -77,24 +80,29 @@
                                 name="ausgaben_höhe"
                                 class="form-range"
                                 min="0" 
-                                max="250" 
+                                max="100" 
                                 value="0">
 
 
                             <div>
-                                <label for="ausgaben_höhe" class="form-label">
-                                    Eigener Wert: <span id="amount-value"></span>
-                            </label
-                                placeholder="Kommantar zur Ausgabe">
-                            <input>
-
-
-
-                            <label for="ausgaben_höhe" class="form-label">
-                                Kommentar: <span id="amount-value"></span>
-                        </label
-                            placeholder="Kommantar zur Ausgabe">
-                        <input>
+                                <label for="ausgaben_eigen" class="form-label">
+                                    Eigener Wert:
+                                </label>
+                                <input type="number" 
+                                       id="ausgaben_eigen" 
+                                       name="ausgaben_eigen" 
+                                       class="form-control" 
+                                       placeholder="Oder eigenen Betrag eingeben"
+                                       step="0.01">
+                            
+                                <label for="ausgaben_kommentar" class="form-label">
+                                    Kommentar:
+                                </label>
+                                <input type="text" 
+                                       id="ausgaben_kommentar" 
+                                       name="ausgaben_kommentar" 
+                                       class="form-control" 
+                                       placeholder="Kommentar zur Ausgabe">
 
 
 
@@ -119,15 +127,35 @@
         <div class="container mt-4">
             <div class="row">
                 <!-- Linke Spalte: Summe -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Ausgaben {{ monat_name }}</h5>
-                            <h2 class="text-danger">{{ gesamt_summe }}€</h2>
+                <div class="col-md-8">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Ausgaben {{ monat_name }}</h5>
+                                <h2 class="text-danger">{{ gesamt_summe }}€</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Restbetrag für {{ monat_name }}</h5>
+                                <h2 class="text-danger">{{ restbetrag }}€</h2>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Restbetrag für {{ monat_name }}</h5>
+                                <h2 class="text-danger">{{ kapital }}€</h2>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
                 <!-- Rechte Spalte: Chart -->
                 <div class="col-md-8">
                     <div class="card">
@@ -183,6 +211,63 @@
                 }
             });
         </script> 
+
+        <!-- Ersetze den Chart.js Pie Chart Code mit diesem: -->
+
+<div class="col-md-8">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Budget-Status für {{ monat_name }}</h5>
+            
+            <!-- Zahlen-Übersicht -->
+            <div class="row text-center mb-3">
+                <div class="col-4">
+                    <small class="text-muted">Startkapital</small>
+                    <h4>{{ startkapital }}€</h4>
+                </div>
+                <div class="col-4">
+                    <small class="text-muted">Ausgegeben</small>
+                    <h4 class="text-danger">{{ gesamt_summe }}€</h4>
+                </div>
+                <div class="col-4">
+                    <small class="text-muted">Noch verfügbar</small>
+                    <h4 class="text-success">{{ kapital }}€</h4>
+                </div>
+            </div>
+
+            <!-- Statusbalken -->
+            <div class="progress" style="height: 40px; background-color: #e9ecef;">
+                <div class="progress-bar" 
+                     id="budget-bar"
+                     role="progressbar" 
+                     style="background-color: {{ bar_color }}; transition: all 0.3s ease;"
+                     aria-valuenow="{{ prozent_verbraucht }}" 
+                     aria-valuemin="0" 
+                     aria-valuemax="100">
+                    <strong style="font-size: 16px;">{{ prozent_verfuegbar }}% verfügbar</strong>
+                </div>
+            </div>
+
+            <!-- Prozent-Info unter dem Balken -->
+            <div class="text-center mt-2">
+                <small class="text-muted">
+                    {{ prozent_verbraucht }}% des Budgets ausgegeben
+                </small>
+            </div>
+
+            <!-- Optionale Warnung bei niedrigem Budget -->
+            {% if prozent_verbraucht > 80 %}
+                <div class="alert alert-warning mt-3 mb-0">
+                    ⚠️ Achtung: Du hast bereits über 80% deines Budgets verbraucht!
+                </div>
+            {% elif prozent_verbraucht > 90 %}
+                <div class="alert alert-danger mt-3 mb-0">
+                    🚨 Kritisch: Nur noch {{ prozent_verfuegbar }}% des Budgets verfügbar!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
        
             
 
@@ -193,6 +278,17 @@
             <div class="mb-1">
                 <p>Ausgaben Aktuelle</p>
                 <p>Aktueller Restbetrag: {{ restbetrag }}€</p>
+            </div>
+
+
+        </div>
+
+        <div class="container mt-4">
+            <h3>Restgeld für {{ monat_name }} </h3>
+
+            <div class="mb-1">
+                <p>Ausgaben Aktuelle</p>
+                <p>Aktueller Restbetrag: {{ kapital }}€</p>
             </div>
 
 
@@ -264,5 +360,51 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        // Animiere den Fortschrittsbalken beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            const bar = document.getElementById('budget-bar');
+            const targetWidth = bar.style.width || '0%';
+            bar.style.width = '0%';
+            
+            setTimeout(() => {
+                bar.style.width = '{{ prozent_verfuegbar }}%';
+            }, 100);
+        });
+        </script>
+
+<script>
+    // Balken-Animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const bar = document.getElementById('budget-bar');
+        if (bar) {
+            const targetWidth = parseFloat('{{ prozent_verfuegbar }}');
+            
+            // Starte bei 0
+            bar.style.width = '0%';
+            
+            // Animiere zum Zielwert
+            setTimeout(() => {
+                bar.style.width = targetWidth + '%';
+            }, 100);
+        }
+    });
+    
+    // Slider-Updates
+    document.getElementById('ausgaben_höhe').addEventListener('input', function(e) {
+        document.getElementById('amount-value').textContent = e.target.value;
+        
+        const value = parseInt(e.target.value);
+        const max = parseInt(e.target.max);
+        const percent = (value / max) * 100;
+        const hue = 120 - (value / max) * 120;
+        const color = `hsl(${hue}, 100%, 45%)`;
+        
+        this.style.background = `linear-gradient(90deg, ${color} ${percent}%, #ddd ${percent}%)`;
+    });
+    </script>
 </body>
 </html>
+
