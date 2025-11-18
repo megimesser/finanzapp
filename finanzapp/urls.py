@@ -17,15 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
+from django.contrib.auth import views as auth_views
 
 def root_redirect(request):
     return redirect('/home/')
 
-
 urlpatterns = [
-    path('', root_redirect),  # Komma hinzugefügt
-    path('home/', include('home.urls')),  # Komma hinzugefügt
+    path('', root_redirect),
+    path('home/', include('home.urls')),
     path('admin/', admin.site.urls),
-    path("interface/", include("interface.urls")),
-    path("kosten/", include("kosten.urls")),  # ✅ RICHTIG
+    path('interface/', include('interface.urls')),
+    path('kosten/', include('kosten.urls')),
+    path('login/', include('login.urls')),
 ]

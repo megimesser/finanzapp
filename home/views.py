@@ -6,12 +6,28 @@ from django.db.models import Sum
 import json
 from kosten.models import Einnahmen_Summe, Kosten_Summe, Restwert, Einnahmen, Kosten
 from decimal import Decimal
+from django.views.generic.edit import CreateView  # ← Import fehlt!
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin  # ← 1. Import
+from django.urls import reverse_lazy
+from .models import Ausgabe
+from django.shortcuts import render, redirect
+from django.views import View
 
+class TestFormular(LoginRequiredMixin, CreateView):
+    model = Ausgabe
+    template_name = 'home/testtemplate.html'
+    fields = '__all__'
+    success_url = reverse_lazy('ausgaben:all')
+    login_url = '/login/'  # ← Verwende den direkten Pfad
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
-
-
-
-#Ausgaben hinzufügen
 #Ausgaben hinzufügen
 def add_cost(request):
     if request.method == 'POST':
@@ -231,7 +247,6 @@ def dateien_nach_monat(request):
     return render(request, 'home/main.html', context)
 
 
-
 def index(request):
     heute = datetime.now()
     monat_name = heute.strftime("%B %Y")
@@ -245,14 +260,17 @@ def index(request):
     # Gesamtsumme der Ausgaben
     gesamt_summe = ausgaben.aggregate(
         total=Sum('ausgaben_höhe')
-    )['total'] or 0
+    )['total'] or Decimal('0')
     
     # Startkapital aus Restwert holen
     restbetrag_objekt = Restwert.objects.first()
-    startkapital = restbetrag_objekt.restwert if restbetrag_objekt else Decimal('2000')
     
-    # Konvertiere zu float für Berechnungen
-    startkapital = float(startkapital)
+    if restbetrag_objekt and restbetrag_objekt.restwert:
+        startkapital = float(restbetrag_objekt.restwert)
+    else:
+        startkapital = 5000.0  # Fallback-Wert
+    
+    # Konvertiere gesamt_summe zu float
     gesamt_summe = float(gesamt_summe)
     
     # Verfügbares Kapital
@@ -283,6 +301,13 @@ def index(request):
     
     chart_labels = json.dumps([k['ausgaben_kategorie'] for k in kategorien_summen])
     chart_data = json.dumps([float(k['summe']) for k in kategorien_summen])
+    
+    # Debug-Ausgaben
+    print(f"Startkapital: {startkapital}")
+    print(f"Gesamt Summe: {gesamt_summe}")
+    print(f"Kapital: {kapital}")
+    print(f"Prozent verbraucht: {prozent_verbraucht}")
+    print(f"Prozent verfügbar: {prozent_verfuegbar}")
     
     context = {
         'ausgaben': ausgaben,

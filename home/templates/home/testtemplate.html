@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Option A: Einfach alles rendern -->
+        {{ form.as_p }}
+        
+        <!-- Option B: Bootstrap-Style -->
+        {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <!-- Option C: Einzelne Felder manuell -->
+        <div class="mb-3">
+            <label>Name:</label>
+            {{ form.name }}
+        </div>
+        <div class="mb-3">
+            <label>Betrag:</label>
+            {{ form.betrag }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Speichern</button>
+    </form>
+    
+    <!-- Deine zusätzlichen Daten -->
+    <p>{{ daten }}</p>
+    
+</body>
+</html>

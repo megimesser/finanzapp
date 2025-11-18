@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "interface",
     "home",
     "kosten",
+    "login"
 ]
 
 STATIC_URL = '/static/'
@@ -130,3 +131,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+
+# dein_projekt/settings.py
+
+# ... andere Settings ...
+
+# finanzapp/settings.py
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_REDIRECT_URL = '/login/'

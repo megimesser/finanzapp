@@ -13,6 +13,22 @@
 </head>
 
 <body>
+
+    <!-- Irgendwo in deiner HTML -->
+<a href="{% url 'home:test_create' %}">Test-Ausgabe erstellen</a>
+
+<!-- Oder als Button -->
+ <!-- Namespace der App: Funktionsaufruf -->
+<a href="{% url 'home:test_create' %}" class="btn btn-primary">
+    Neue Test-Ausgabe
+</a>
+
+
+
+
+
+
+
     <section id="main-section-home">
         <section id="eingabe_wrapper">
             <div id="eingabe-form">
@@ -23,7 +39,7 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarNav">
-                        <h1>MyFinance</h1>
+                            <h1>MyFinance</h1>
                             <ul class="navbar-nav">
                                 <li class="nav-item">
                                     <a class="nav-link active" aria-current="page" href="#">Home</a>
@@ -34,7 +50,6 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="#">Statistik</a>
                                 </li>
-                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#">Unternehmen</a>
                                 </li>
@@ -43,12 +58,13 @@
                     </div>
                 </nav>
             </div>
-            <div id ="outer-wrapper">
+
+            <div id="outer-wrapper">
                 <div id="main-wrapper">
                     <!-- KORRIGIERTES FORMULAR --> 
                     <form hx-post="{% url 'home:add_cost' %}" 
-                        hx-target="#result"
-                        hx-swap="afterbegin">
+                          hx-target="#result"
+                          hx-swap="afterbegin">
                         
                         {% csrf_token %}
 
@@ -65,11 +81,10 @@
                                 <option value="restaurant">Restaurant</option>
                                 <option value="sonstiges">Sonstiges</option>
                                 <option value="freizeit">Freizeit</option>
-                                
                             </select>
                         </div>
 
-                        <!-- Betrag Slider - KORRIGIERT! -->
+                        <!-- Betrag Slider -->
                         <div class="mb-3">
                             <label for="ausgaben_höhe" class="form-label">
                                 Betrag: <span id="amount-value">0</span>€
@@ -82,37 +97,27 @@
                                 min="0" 
                                 max="100" 
                                 value="0">
+                        </div>
 
+                        <!-- Eigener Wert -->
+                        <div class="mb-3">
+                            <label for="ausgaben_eigen" class="form-label">Eigener Wert:</label>
+                            <input type="number" 
+                                   id="ausgaben_eigen" 
+                                   name="ausgaben_eigen" 
+                                   class="form-control" 
+                                   placeholder="Oder eigenen Betrag eingeben"
+                                   step="0.01">
+                        </div>
 
-                            <div>
-                                <label for="ausgaben_eigen" class="form-label">
-                                    Eigener Wert:
-                                </label>
-                                <input type="number" 
-                                       id="ausgaben_eigen" 
-                                       name="ausgaben_eigen" 
-                                       class="form-control" 
-                                       placeholder="Oder eigenen Betrag eingeben"
-                                       step="0.01">
-                            
-                                <label for="ausgaben_kommentar" class="form-label">
-                                    Kommentar:
-                                </label>
-                                <input type="text" 
-                                       id="ausgaben_kommentar" 
-                                       name="ausgaben_kommentar" 
-                                       class="form-control" 
-                                       placeholder="Kommentar zur Ausgabe">
-
-
-
-
-
-
-
-
-                            </div>
-                            
+                        <!-- Kommentar -->
+                        <div class="mb-3">
+                            <label for="ausgaben_kommentar" class="form-label">Kommentar:</label>
+                            <input type="text" 
+                                   id="ausgaben_kommentar" 
+                                   name="ausgaben_kommentar" 
+                                   class="form-control" 
+                                   placeholder="Kommentar zur Ausgabe">
                         </div>
 
                         <button type="submit" class="btn btn-primary">Speichern</button>
@@ -146,7 +151,6 @@
                         </div>
                     </div>
 
-
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body text-center">
@@ -156,6 +160,7 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- Rechte Spalte: Chart -->
                 <div class="col-md-8">
                     <div class="card">
@@ -169,140 +174,81 @@
                 </div>
             </div>
         </div>
-        
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            const ctx = document.getElementById('myPieChart').getContext('2d');
-            const myPieChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: {{ chart_labels|safe }},
-                    datasets: [{
-                        data: {{ chart_data|safe }},
-                        backgroundColor: [
-                            '#FF6384',
-                            '#36A2EB',
-                            '#FFCE56',
-                            '#4BC0C0',
-                            '#9966FF',
-                            '#FF9F40',
-                            '#E7E9ED'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                boxWidth: 15,
-                                padding: 10,
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        },
-                        title: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        </script> 
 
-        <!-- Ersetze den Chart.js Pie Chart Code mit diesem: -->
+        <!-- Budget-Status Balken -->
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Budget-Status für {{ monat_name }}</h5>
+                            
+                            <!-- Zahlen-Übersicht -->
+                            <div class="row text-center mb-3">
+                                <div class="col-4">
+                                    <small class="text-muted">Startkapital</small>
+                                    <h4>{{ startkapital }}€</h4>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">Ausgegeben</small>
+                                    <h4 class="text-danger">{{ gesamt_summe }}€</h4>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted">Noch verfügbar</small>
+                                    <h4 class="text-success">{{ kapital }}€</h4>
+                                </div>
+                            </div>
 
-<div class="col-md-8">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Budget-Status für {{ monat_name }}</h5>
-            
-            <!-- Zahlen-Übersicht -->
-            <div class="row text-center mb-3">
-                <div class="col-4">
-                    <small class="text-muted">Startkapital</small>
-                    <h4>{{ startkapital }}€</h4>
-                </div>
-                <div class="col-4">
-                    <small class="text-muted">Ausgegeben</small>
-                    <h4 class="text-danger">{{ gesamt_summe }}€</h4>
-                </div>
-                <div class="col-4">
-                    <small class="text-muted">Noch verfügbar</small>
-                    <h4 class="text-success">{{ kapital }}€</h4>
+                            <!-- Statusbalken -->
+                            <!-- Statusbalken -->
+                            <div class="progress" style="height: 40px; background-color: #e9ecef;">
+                                <div class="progress-bar" 
+                                    id="budget-bar"
+                                    role="progressbar" 
+                                    style="background-color: {{ bar_color }}; transition: all 0.5s ease; width: {{ prozent_verfuegbar }}%;"
+                                    aria-valuenow="{{ prozent_verfuegbar }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
+                                    <strong style="font-size: 16px;">{{ prozent_verfuegbar }}% verfügbar</strong>
+                                </div>
+                            </div>
+                            <!-- Prozent-Info unter dem Balken -->
+                            <div class="text-center mt-2">
+                                <small class="text-muted">
+                                    {{ prozent_verbraucht }}% des Budgets ausgegeben
+                                </small>
+                            </div>
+
+                            <!-- Optionale Warnung bei niedrigem Budget -->
+                            {% if prozent_verbraucht > 90 %}
+                                <div class="alert alert-danger mt-3 mb-0">
+                                    🚨 Kritisch: Nur noch {{ prozent_verfuegbar }}% des Budgets verfügbar!
+                                </div>
+                            {% elif prozent_verbraucht > 80 %}
+                                <div class="alert alert-warning mt-3 mb-0">
+                                    ⚠️ Achtung: Du hast bereits über 80% deines Budgets verbraucht!
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <!-- Statusbalken -->
-            <div class="progress" style="height: 40px; background-color: #e9ecef;">
-                <div class="progress-bar" 
-                     id="budget-bar"
-                     role="progressbar" 
-                     style="background-color: {{ bar_color }}; transition: all 0.3s ease;"
-                     aria-valuenow="{{ prozent_verbraucht }}" 
-                     aria-valuemin="0" 
-                     aria-valuemax="100">
-                    <strong style="font-size: 16px;">{{ prozent_verfuegbar }}% verfügbar</strong>
-                </div>
-            </div>
-
-            <!-- Prozent-Info unter dem Balken -->
-            <div class="text-center mt-2">
-                <small class="text-muted">
-                    {{ prozent_verbraucht }}% des Budgets ausgegeben
-                </small>
-            </div>
-
-            <!-- Optionale Warnung bei niedrigem Budget -->
-            {% if prozent_verbraucht > 80 %}
-                <div class="alert alert-warning mt-3 mb-0">
-                    ⚠️ Achtung: Du hast bereits über 80% deines Budgets verbraucht!
-                </div>
-            {% elif prozent_verbraucht > 90 %}
-                <div class="alert alert-danger mt-3 mb-0">
-                    🚨 Kritisch: Nur noch {{ prozent_verfuegbar }}% des Budgets verfügbar!
-                </div>
-            {% endif %}
         </div>
-    </div>
-</div>
-       
-            
-
 
         <div class="container mt-4">
-            <h3>Fixkostenbetrag für {{ monat_name }} </h3>
-
+            <h3>Fixkostenbetrag für {{ monat_name }}</h3>
             <div class="mb-1">
                 <p>Ausgaben Aktuelle</p>
                 <p>Aktueller Restbetrag: {{ restbetrag }}€</p>
             </div>
-
-
         </div>
 
         <div class="container mt-4">
-            <h3>Restgeld für {{ monat_name }} </h3>
-
+            <h3>Restgeld für {{ monat_name }}</h3>
             <div class="mb-1">
                 <p>Ausgaben Aktuelle</p>
                 <p>Aktueller Restbetrag: {{ kapital }}€</p>
             </div>
-
-
-        </div>
-
-        <div class="container mt-4">
-            <h3>Restgeld für {{ monat_name }} </h3>
-
-            <div class="mb-1">
-                <p>Ausgaben Aktuelle</p>
-                <p>Aktueller Restbetrag: {{ kapital }}€</p>
-            </div>
-
-
         </div>
 
         <div class="container mt-4">
@@ -326,85 +272,89 @@
                 </div>
             {% endif %}
         </div>
-
-       
     </section>
 
-    <!-- JavaScript für Live-Update des Sliders -->
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.getElementById('ausgaben_höhe').addEventListener('input', function(e) {
-            document.getElementById('amount-value').textContent = e.target.value;
+        const ctx = document.getElementById('myPieChart').getContext('2d');
+        const myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [{
+                    data: {{ chart_data|safe }},
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40',
+                        '#E7E9ED'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 15,
+                            padding: 10,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    title: {
+                        display: false
+                    }
+                }
+            }
         });
     </script>
 
-<script>
-    const slider = document.getElementById("ausgaben_höhe");
-    const output = document.getElementById("amount-value");
-    
-    slider.addEventListener("input", function(e) {
-      const value = parseInt(e.target.value);
-      const max = parseInt(e.target.max);
-      const percent = (value / max) * 100;
-      output.textContent = value;
-    
-      // HSL-Farbwert: Grün (120°) -> Gelb (60°) -> Rot (0°)
-      // hue = 120 - (value / max) * 120  (also von 120° bis 0°)
-      const hue = 120 - (value / max) * 120; 
-      const color = `hsl(${hue}, 100%, 45%)`;
-    
-      // Verlauf bis zum aktuellen Punkt
-      slider.style.background = `linear-gradient(90deg, ${color} ${percent}%, #ddd ${percent}%)`;
-    });
+    <!-- Slider-Animation und Budget-Bar Animation -->
+    <script>
+        // Balken-Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const bar = document.getElementById('budget-bar');
+            if (bar) {
+                const targetWidth = parseFloat('{{ prozent_verfuegbar }}');
+                
+                // Starte bei 0
+                bar.style.width = '0%';
+                
+                // Animiere zum Zielwert
+                setTimeout(() => {
+                    bar.style.width = targetWidth + '%';
+                }, 100);
+            }
+        });
+        
+        // Slider-Updates
+        const slider = document.getElementById('ausgaben_höhe');
+        const output = document.getElementById('amount-value');
+        
+        slider.addEventListener('input', function(e) {
+            const value = parseInt(e.target.value);
+            const max = parseInt(e.target.max);
+            const percent = (value / max) * 100;
+            output.textContent = value;
+            
+            // HSL-Farbwert: Grün (120°) -> Gelb (60°) -> Rot (0°)
+            const hue = 120 - (value / max) * 120;
+            const color = `hsl(${hue}, 100%, 45%)`;
+            
+            // Verlauf bis zum aktuellen Punkt
+            this.style.background = `linear-gradient(90deg, ${color} ${percent}%, #ddd ${percent}%)`;
+        });
     </script>
-    
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
-    <script>
-        // Animiere den Fortschrittsbalken beim Laden
-        document.addEventListener('DOMContentLoaded', function() {
-            const bar = document.getElementById('budget-bar');
-            const targetWidth = bar.style.width || '0%';
-            bar.style.width = '0%';
-            
-            setTimeout(() => {
-                bar.style.width = '{{ prozent_verfuegbar }}%';
-            }, 100);
-        });
-        </script>
-
-<script>
-    // Balken-Animation
-    document.addEventListener('DOMContentLoaded', function() {
-        const bar = document.getElementById('budget-bar');
-        if (bar) {
-            const targetWidth = parseFloat('{{ prozent_verfuegbar }}');
-            
-            // Starte bei 0
-            bar.style.width = '0%';
-            
-            // Animiere zum Zielwert
-            setTimeout(() => {
-                bar.style.width = targetWidth + '%';
-            }, 100);
-        }
-    });
-    
-    // Slider-Updates
-    document.getElementById('ausgaben_höhe').addEventListener('input', function(e) {
-        document.getElementById('amount-value').textContent = e.target.value;
-        
-        const value = parseInt(e.target.value);
-        const max = parseInt(e.target.max);
-        const percent = (value / max) * 100;
-        const hue = 120 - (value / max) * 120;
-        const color = `hsl(${hue}, 100%, 45%)`;
-        
-        this.style.background = `linear-gradient(90deg, ${color} ${percent}%, #ddd ${percent}%)`;
-    });
-    </script>
 </body>
 </html>
-

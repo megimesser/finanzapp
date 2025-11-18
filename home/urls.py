@@ -7,5 +7,11 @@ urlpatterns = [
     path('add-cost/', views.add_cost, name='add_cost'),
     path('dateien/', views.dateien_nach_monat, name='dateien_nach_monat'),
     path('show_cost/', views.show_cost, name='show_cost'),
+    #path('', views.AusgabenListe.as_view(), name='all'),  # Übersicht
+    path('create/', views.TestFormular.as_view(), name='test_create'),  # ← NEU
+    # ← DIESE ZWEI ZEILEN SIND PFLICHT FÜR LOGIN/LOGOUT
+ 
+ 
+    
 
 ]
